@@ -16,7 +16,7 @@ COPY barista-http/src /project/barista-http/src
 RUN mvn -q -f barista-http/pom.xml package
 
 # Start with OL runtime.
-FROM open-liberty
+FROM open-liberty:kernel
 
 # Copy app binaries
 
@@ -26,7 +26,8 @@ COPY --from=build --chown=1001:0 /project/barista-http/src/main/liberty/config/s
 # Start and stop Liberty to create the shared class cache
 # To capture JVM start options, add: -verbose:gc -Xverbosegclog:/tmp/gc.log.%p
 ENV JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS} -Xquickstart -Xms64m -Xmn48m"
-RUN /opt/ol/wlp/bin/server start defaultServer && sleep 5 && /opt/ol/wlp/bin/server stop defaultServer && (java -Xshareclasses:name=liberty-%u,nonfatal,cacheDir=/opt/ol/wlp/output/.classCache,printStats || echo "OK")
+ENV OPENJ9_JAVA_OPTIONS="${IBM_JAVA_OPTIONS}"
+RUN configure.sh && (java -Xshareclasses:name=liberty-%u,nonfatal,cacheDir=/output/.classCache,printStats || echo "OK")
 
 EXPOSE 8082
 

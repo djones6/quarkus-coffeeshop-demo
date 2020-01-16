@@ -16,7 +16,7 @@ COPY barista-kafka/src /project/barista-kafka/src
 RUN mvn -q -f barista-kafka/pom.xml package
 
 ## Create Image
-FROM open-liberty
+FROM open-liberty:kernel
 
 COPY --from=build --chown=1001:0 /project/barista-kafka/target/barista-kafka-1.0-SNAPSHOT.war /opt/ol/wlp/usr/servers/defaultServer/apps
 COPY --from=build --chown=1001:0 /project/barista-kafka/src/main/liberty/config/server.xml /opt/ol/wlp/usr/servers/defaultServer
@@ -27,7 +27,11 @@ COPY barista-kafka/barista-name.sh /tmp
 # Start and stop Liberty to create the shared class cache
 # To capture JVM start options, add: -verbose:gc -Xverbosegclog:/tmp/gc.log.%p
 ENV JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS} -Xquickstart -Xms64m -Xmn48m"
-RUN /opt/ol/wlp/bin/server start defaultServer && sleep 5 && /opt/ol/wlp/bin/server stop defaultServer && (java -Xshareclasses:name=liberty-%u,nonfatal,cacheDir=/opt/ol/wlp/output/.classCache,printStats || echo "OK")
+ENV OPENJ9_JAVA_OPTIONS="${IBM_JAVA_OPTIONS}"
+RUN configure.sh && (java -Xshareclasses:name=liberty,nonfatal,cacheDir=/output/.classCache,printStats || echo "OK")
+RUN configure.sh && (java -Xshareclasses:name=liberty,nonfatal,cacheDir=/output/.classCache,printStats || echo "OK")
+RUN configure.sh && (java -Xshareclasses:name=liberty,nonfatal,cacheDir=/output/.classCache,printStats || echo "OK")
+RUN configure.sh && (java -Xshareclasses:name=liberty,nonfatal,cacheDir=/output/.classCache,printStats || echo "OK")
 
 EXPOSE 8090
 
