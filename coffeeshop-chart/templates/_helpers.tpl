@@ -25,11 +25,11 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "coffeeshopChart.labels" -}}
-app.kubernetes.io/name: {{ .Chart.Name }}
 helm.sh/chart: {{ include "coffeeshopChart.chart" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
+app.kubernetes.io/part-of: {{ .Chart.Name }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}

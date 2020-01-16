@@ -4,6 +4,7 @@ metadata:
   name: {{ include "baristaHttp.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
+    app.kubernetes.io/name: barista-http
 {{ include "coffeeshopChart.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.baristaHttp.replicaCount }}
